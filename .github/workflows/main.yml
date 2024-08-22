@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Blender
-      - run: sudo snap install blender
+        run: sudo snap install blender
   clone_repo:
       name: Clone Repository
       runs-on: ubuntu-latest
