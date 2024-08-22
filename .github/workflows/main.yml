@@ -21,6 +21,10 @@ jobs:
       steps: 
         - name: Clone Repo
           uses: actions/checkout@v4
+        - name: Check Binary
+          run: snap list
+        - name: List bin
+          run: ls -la /snap/bin/
         - name: Build
           run: |
             blender --command extension build
