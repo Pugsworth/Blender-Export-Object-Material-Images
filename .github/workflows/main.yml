@@ -1,0 +1,25 @@
+name: Build and Validate Blender Add-on
+
+on:
+  workflow_dispatch:
+    
+jobs:
+  install_blender:
+    name: Install Blender
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Blender
+      - run: sudo snap install blender
+  clone_repo:
+      name: Clone Repository
+      runs-on: ubuntu-latest
+      steps: 
+        - name: Clone Repo
+          uses: actions/checkout@v4
+        - name: Build
+          run: |
+            blender --command extension build
+        - name: Validate
+          run: |
+            blender --command extension validate *.zip
+                
