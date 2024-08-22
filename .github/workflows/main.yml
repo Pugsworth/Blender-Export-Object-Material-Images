@@ -10,6 +10,10 @@ jobs:
     steps:
       - name: Install Blender
         run: sudo snap install blender --classic
+      - name: Check Binary
+        run: snap list
+      - name: List bin
+        run: ls -la /snap/bin/
   build_and_validate:
       name: Build and Validate
       runs-on: ubuntu-latest
