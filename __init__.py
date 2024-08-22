@@ -1,8 +1,11 @@
 bl_info = {
         "name": "Export Object Material Images",
         "description": "This operator allows for exporting ",
-        "blender": (4, 1, 0),
-        "category": "Export",
+        "author": "Uriah",
+        "version": (1, 0, 0),
+        "blender": (4, 0, 0),
+        "category": "Input-Export",
+        "warning": "Alpha version - expect some errors!",
 }
 
 
