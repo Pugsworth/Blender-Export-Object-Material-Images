@@ -3,7 +3,7 @@ schema_version = "1.0.0"
 id = "export_object_material_images"
 version = "1.0.0"
 name = "Export Object Material Images"
-tagline = "Exports all of the connected ImageTexture nodes of the materials on the active object."
+tagline = "Export connected ImageTexture node images"
 maintainer = "Uriah <uriahvorti@gmail.com>"
 type = "add-on"
 
