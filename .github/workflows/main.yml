@@ -13,6 +13,7 @@ jobs:
   build_and_validate:
       name: Build and Validate
       runs-on: ubuntu-latest
+      needs: [install_blender]
       steps: 
         - name: Clone Repo
           uses: actions/checkout@v4
