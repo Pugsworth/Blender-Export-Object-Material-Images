@@ -1,0 +1,22 @@
+schema_version = "1.0.0"
+
+id = "export_object_material_images"
+version = "1.0.0"
+name = "Export Object Material Images"
+tagline = "Exports all of the connected ImageTexture nodes of the materials on the active object."
+maintainer = "Uriah <uriahvorti@gmail.com>"
+type = "add-on"
+
+tags = ["Import-Export"]
+
+blender_version_min = "4.0.0"
+license = [
+    "SPDX:GPL-3.0-or-later",
+]
+
+[build]
+paths_exclude_pattern = [
+    "__pycache__/",
+    ".*",
+    "*.zip",
+]
