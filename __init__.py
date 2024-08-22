@@ -8,11 +8,14 @@ bl_info = {
 
 
 import os
+from typing import Annotated
 import bpy
 import pathlib
 
+
+
 def is_node_active(node, output_node):
-    # Recursively checks if a node is connected to the output node
+    """Recursively checks if a node is connected to the output node"""
     if node == output_node:
         return True
     for output in node.outputs:
@@ -21,7 +24,9 @@ def is_node_active(node, output_node):
                 return True
     return False
 
+
 def image_format_to_file_extension(fmt: str) -> str:
+    """Get the expected file extension from one of the built-in image formats."""
     match fmt:
         case "PNG":
             return "png"
@@ -45,17 +50,31 @@ def image_format_to_file_extension(fmt: str) -> str:
             return "exr"
         case "IRIS":
             return "sgi"
+        case _:
+            return ""
 
 
-def get_file_extension(path: str) -> (str, str):
+def get_file_extension(path: str) -> str:
+    """Returns the file extension from a string path."""
     ppath = pathlib.PurePath(path)
     ext = ppath.suffix
-    if ext == "":
-        pass
     return ext
 
 
-def get_active_material_textures(obj):
+def get_active_material_textures(obj) -> list[object]:
+    """
+        Fetches the materials of the object and iterates through for all "TEX_IMAGE" nodes.
+        Then, tries to determine which of these nodes are actively used by recursively tracing back to the first "OUTPUT_MATERIAL" node found.
+
+        Potential failure points:
+        - If there are multiple "OUTPUT_MATERIAL" nodes (is this possible?).
+
+        Cases where this doesn't work, but doesn't fail or results in unexpected outcomes:
+        - Material isn't using nodes (who does this anymore?)
+        - Material is made up of multiple textures nodes to procedurally create the material.
+          This is expecting only complete texture nodes.
+          This could be a major issue since there's no checking or safeties in place for it.
+    """
     textures = []
 
     # Ensure an object is selected
@@ -64,7 +83,7 @@ def get_active_material_textures(obj):
         for mat_slot in obj.material_slots:
             mat = mat_slot.material
             if mat:
-                print(f"Material: {mat.name}")
+                # print(f"Material: {mat.name}")
                 # Check if the material has a node tree (using nodes)
                 if mat.use_nodes:
                     # Find the material output node
@@ -82,24 +101,21 @@ def get_active_material_textures(obj):
                                 texture = node.image
                                 if texture:
                                     active = is_node_active(node, output_node)
-                                    status = "active" if active else "inactive"
-                                    print(f"  Texture: {texture.name} ({status})")
+                                    # status = "active" if active else "inactive"
+                                    # print(f"  Texture: {texture.name} ({status})")
                                     if active:
                                         textures.append(texture);
-        return textures
-    else:
-        print("Please select a mesh object.")
+    return textures
 
 
 def save_images(context: bpy.types.Context, dest: str):
+    """
+        Saves the images used in the textures of the active object.
+    """
     # Get the selected object
     obj = context.active_object
 
     textures = get_active_material_textures(obj)
-
-    # Image saving destination
-    # TODO: This should be fetched from a dialog
-    # dst = os.path.join(os.environ["temp"], "saws_poster")
 
     # Gotta make a new temporary scene for setting the export parameters.
     # It's a very strange way of doing it, but it's apparently the only way to actually save an Image as a specific format without saving the original image to a new location.
@@ -126,7 +142,9 @@ def save_images(context: bpy.types.Context, dest: str):
     bpy.data.scenes.remove(temp_scene)
 
 
-
+#
+# Now for the actual operator!
+#
 
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty
@@ -137,21 +155,22 @@ class SaveObjectImagesOperator(Operator, ExportHelper):
     bl_idname = "export_test.save_object_images"
     bl_label = "Save object material images"
 
-    filter_glob: StringProperty(
+    filter_glob: Annotated[StringProperty, StringProperty(
         default="*/*",
         options={"HIDDEN"},
         maxlen=255,
-    )
+        )]
 
-    filename_ext: StringProperty(
+    filename_ext: Annotated[StringProperty, StringProperty(
         default="",
         options={"HIDDEN"},
         maxlen=255,
-    )
+        )]
 
-    filename: StringProperty(
+    # NOTE: I'm not sure if this definition is even required.
+    filename: Annotated[StringProperty, StringProperty(
         default=""
-    )
+        )]
 
 
     def invoke(self, context, event):
@@ -159,9 +178,7 @@ class SaveObjectImagesOperator(Operator, ExportHelper):
         self.properties.filename = ""
         context.window_manager.fileselect_add(self)
         return {"RUNNING_MODAL"}
-
-
-        # return super().invoke(context, event)
+    # return super().invoke(context, event)
 
     def execute(self, context):
         userpath = self.properties.filepath
@@ -173,8 +190,10 @@ class SaveObjectImagesOperator(Operator, ExportHelper):
         save_images(context, userpath)
         return {"FINISHED"}
 
+
 def menu_func_export(self, context):
     self.layout.operator(SaveObjectImagesOperator.bl_idname, text="Save Object Images Operator")
+
 
 def register():
     # Register the Operator
@@ -183,6 +202,7 @@ def register():
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
     # Register in the View3D Object space
     bpy.types.VIEW3D_MT_object.append(menu_func_export)
+
 
 def unregister():
     bpy.utils.unregister_class(SaveObjectImagesOperator)
