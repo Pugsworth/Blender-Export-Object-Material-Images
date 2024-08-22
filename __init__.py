@@ -114,8 +114,13 @@ def save_images(context: bpy.types.Context, dest: str):
     """
     # Get the selected object
     obj = context.active_object
+    if obj is None:
+        raise Exception("No active object!")
+
 
     textures = get_active_material_textures(obj)
+    if len(textures) == 0:
+        raise Exception("Mesh has no textures!")
 
     # Gotta make a new temporary scene for setting the export parameters.
     # It's a very strange way of doing it, but it's apparently the only way to actually save an Image as a specific format without saving the original image to a new location.
@@ -129,15 +134,19 @@ def save_images(context: bpy.types.Context, dest: str):
     for tex in textures:
         is_packed = tex.packed_file is not None
         full_path = tex.filepath
-        print(f"Texture '{tex.name}' '{tex.file_format}' '{tex}' embedded: {is_packed} path is '{tex.filepath}'")
+        # print(f"Texture '{tex.name}' '{tex.file_format}' '{tex}' embedded: {is_packed} path is '{tex.filepath}'")
 
         # Extracting the correct file extension to use for the image, accounting for if the image name already included the extension.
         # Thanks pathlib!
         format_ext = image_format_to_file_extension(settings.file_format)
         # ext = get_file_extension(tex.name)
         save_path = pathlib.PurePath(dest, tex.name).with_suffix('.'+format_ext)
-        print(f"{save_path=}")
-        tex.save_render(str(save_path), scene=temp_scene)
+        # print(f"{save_path=}")
+        try:
+            tex.save_render(str(save_path), scene=temp_scene)
+        except Exception as e:
+            # TODO: Do something about this...
+            pass
 
     bpy.data.scenes.remove(temp_scene)
 
@@ -159,18 +168,18 @@ class SaveObjectImagesOperator(Operator, ExportHelper):
         default="*/*",
         options={"HIDDEN"},
         maxlen=255,
-        )]
+    )]
 
     filename_ext: Annotated[StringProperty, StringProperty(
         default="",
         options={"HIDDEN"},
         maxlen=255,
-        )]
+    )]
 
     # NOTE: I'm not sure if this definition is even required.
     filename: Annotated[StringProperty, StringProperty(
         default=""
-        )]
+    )]
 
 
     def invoke(self, context, event):
@@ -187,8 +196,12 @@ class SaveObjectImagesOperator(Operator, ExportHelper):
             return {"CANCELLED"}
 
         self.report({"INFO"}, f"Selected '{userpath}'")
-        save_images(context, userpath)
-        return {"FINISHED"}
+        try:
+            save_images(context, userpath)
+            return {"FINISHED"}
+        except Exception as e:
+            self.report({"ERROR"}, f"Failed to export images:\n{e}")
+            return {"CANCELLED"}
 
 
 def menu_func_export(self, context):
