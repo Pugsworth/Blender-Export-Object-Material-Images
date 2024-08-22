@@ -5,6 +5,7 @@ version = "1.0.0"
 name = "Export Object Material Images"
 tagline = "Export connected ImageTexture node images"
 maintainer = "Uriah <uriahvorti@gmail.com>"
+website = "https://github.com/Pugsworth/Blender-Export-Object-Material-Images"
 type = "add-on"
 
 tags = ["Import-Export"]
