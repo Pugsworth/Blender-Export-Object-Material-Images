@@ -14,16 +14,12 @@ jobs:
       name: Build and Validate
       runs-on: ubuntu-latest
       steps: 
-        - name: Test
-          run: |
-            which blender
-            whereis blender
         - name: Clone Repo
           uses: actions/checkout@v4
         - name: Build
           run: |
-            blender --command extension build
+            /snap/bin/blender --command extension build
         - name: Validate
           run: |
-            blender --command extension validate *.zip
+            /snap/bin/blender --command extension validate *.zip
                 
