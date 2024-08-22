@@ -19,8 +19,8 @@ jobs:
           uses: actions/checkout@v4
         - name: Build
           run: |
-            /snap/bin/blender --command extension build
+            blender --command extension build
         - name: Validate
           run: |
-            /snap/bin/blender --command extension validate *.zip
+            blender --command extension validate *.zip
                 
