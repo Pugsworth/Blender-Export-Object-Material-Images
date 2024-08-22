@@ -10,10 +10,14 @@ jobs:
     steps:
       - name: Install Blender
         run: sudo snap install blender --classic
-  clone_repo:
-      name: Clone Repository
+  build_and_validate:
+      name: Build and Validate
       runs-on: ubuntu-latest
       steps: 
+        - name: Test
+          run: |
+            which blender
+            whereis blender
         - name: Clone Repo
           uses: actions/checkout@v4
         - name: Build
