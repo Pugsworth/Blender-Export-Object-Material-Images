@@ -1,7 +1,7 @@
 schema_version = "1.0.0"
 
 id = "export_object_material_images"
-version = "1.0.0"
+version = "1.0.1"
 name = "Export Object Material Images"
 tagline = "Export connected ImageTexture node images"
 maintainer = "Uriah <uriahvorti@gmail.com>"

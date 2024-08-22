@@ -2,7 +2,7 @@ bl_info = {
         "name": "Export Object Material Images",
         "description": "This operator allows for exporting ",
         "author": "Uriah",
-        "version": (1, 0, 0),
+        "version": (1, 0, 1),
         "blender": (4, 0, 0),
         "category": "Input-Export",
         "warning": "Alpha version - expect some errors!",
@@ -167,22 +167,22 @@ class SaveObjectImagesOperator(Operator, ExportHelper):
     bl_idname = "export_test.save_object_images"
     bl_label = "Save object material images"
 
-    filter_glob: Annotated[StringProperty, StringProperty(
+    filter_glob: StringProperty(
         default="*/*",
         options={"HIDDEN"},
         maxlen=255,
-    )]
+        ) # type: ignore
 
-    filename_ext: Annotated[StringProperty, StringProperty(
+    filename_ext: StringProperty(
         default="",
         options={"HIDDEN"},
         maxlen=255,
-    )]
+    ) # type: ignore
 
     # NOTE: I'm not sure if this definition is even required.
-    filename: Annotated[StringProperty, StringProperty(
+    filename: StringProperty(
         default=""
-    )]
+    ) # type: ignore
 
 
     def invoke(self, context, event):
