@@ -4,21 +4,12 @@ on:
   workflow_dispatch:
     
 jobs:
-  install_blender:
-    name: Install Blender
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install Blender
-        run: sudo snap install blender --classic
-      - name: Check Binary
-        run: snap list
-      - name: List bin
-        run: ls -la /snap/bin/
   build_and_validate:
       name: Build and Validate
       runs-on: ubuntu-latest
-      needs: [install_blender]
       steps: 
+        - name: Install Blender
+          run: sudo snap install blender --classic
         - name: Clone Repo
           uses: actions/checkout@v4
         - name: Check Binary
